@@ -8,6 +8,7 @@
 #include "WelcomeLayer.h"
 #include "SimpleAudioEngine.h"
 #include "AboutLayer.h"
+#include "GameLayer.h"
 
 USING_NS_CC;
 bool WelcomeLayer::init(){
@@ -22,7 +23,7 @@ bool WelcomeLayer::init(){
 }
 void WelcomeLayer::onEnter(){
 	MBaseLayer::onEnter();
-	if(!CocosDenshion::SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying()){
+	if(!(CocosDenshion::SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying())){
 		if(CCUserDefault::sharedUserDefault()->getBoolForKey("isplay",true)){
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music/dt.mp3",true);
 			// °Ñ ÒôÀÖ×´Ì¬ÉèÖÃÎª²¥·Å×´Ì¬
@@ -113,13 +114,16 @@ void WelcomeLayer::menuGameOverCallback(cocos2d::CCObject* pSend){
 
 void WelcomeLayer::vedioOnAndOffCallBack(CCObject* pSend){
 	if(CCUserDefault::sharedUserDefault()->getBoolForKey("isplay",false)){
-		CocosDenshion::SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
-		CCLOG("music is stop");
+		if (CocosDenshion::SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying()) {
+			CocosDenshion::SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+		}
 		CCUserDefault::sharedUserDefault()->setBoolForKey("isplay",false);
 	}else {
 		CocosDenshion::SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+		if (!(CocosDenshion::SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying())) {
+			CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("music/dt.mp3",true);
+		}
 		CCUserDefault::sharedUserDefault()->setBoolForKey("isplay",true);
-		CCLOG("music is play");
 	}
 
 }
@@ -127,8 +131,6 @@ void WelcomeLayer::menuCoderCallback(CCObject* pSend){
 	CCDirector::sharedDirector()->replaceScene(CCTransitionSlideInR::create(1.0f, AboutLayer::createScene(AboutLayer::create())));
 }
 void WelcomeLayer::menuStarGame(CCObject* pSend){
-//	CCScene* se=DefenderGameLayer::scene();
-//	//CCScene* se=GameSuccessfullyLayer::scene();
-//	CCDirector::sharedDirector()->replaceScene(CCTransitionSlideInR::create(1,se));
+	CCDirector::sharedDirector()->replaceScene(CCTransitionSlideInR::create(1,GameLayer::createScene(GameLayer::create())));
 }
 
